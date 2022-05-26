@@ -1,0 +1,10 @@
+GET http://localhost:3000/api/sauces
+//Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InprMTAtOWZoZmRoMUBob3RtYWlsLmNvbSIsImlhdCI6MTY1MzQ4MzMxMywiZXhwIjoxNjUzNTY5NzEzfQ.Q3XxZP0hjIm3v-IkgjclEW2H3unI0aziuSJjLdrHrIQ
+//Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InprMTAtOWZoZmRoMUBob3RtYWlsLmNvbSIsImlhdCI6MTY1MzUwNjA4OCwiZXhwIjoxNjUzNTkyNDg4fQ.WuR4R55R-Yo56qDmenc2H0ILryIbVm-s_vanb2gcB2o
+//Authorization: Bearer null
+Authorization:  Bearer cdhsgkfghdrhgkdrggegh
+
+###############################################
+post http://localhost:3000/api/auth/signup
+
+{"email": "test@example.com", "password":"password"}
