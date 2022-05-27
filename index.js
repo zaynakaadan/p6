@@ -11,20 +11,24 @@ require("./mongo")
 
 // Controllers
 const {createUser, logUser} = require("./controllers/users")
-const {getSauces} = require("./controllers/sauces")
+const {getSauces, createSauce} = require("./controllers/sauces")
+
+
 //Middleware 
 app.use(cors())
 app.use(express.json())
-
+const {authenticateUser} = require("./middleware/auth")
 //Routes
 app.post("/api/auth/signup", createUser)  
 app.post("/api/auth/login", logUser)
-app.get("/api/sauces", getSauces)
+app.get("/api/sauces", authenticateUser, getSauces)
+app.post("/api/sauces",authenticateUser, createSauce)
 app.get("/", (req, res) =>
     res.send("Hello World! new test"))
 
 // Listen    
 app.listen(port, () => console.log("listening on port"+ port))
+
 
 
 

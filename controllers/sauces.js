@@ -1,23 +1,50 @@
-const jwt = require("jsonwebtoken")//Jsonwebtoken est utilisé pour chiffrer et déchiffrer les tokens
+
+const  mongoose  = require("mongoose")
+
+const productSchema = new mongoose.Schema({
+    userId: String,
+    name : String,
+    manufacturer : String,
+    description : String,
+    mainPepper : String,
+    imageUrl : String,
+    heat : Number,
+    likes : Number,
+    dislikes : Number,
+    usersLiked : [String],
+    usersDisliked : [String]
+})
+//fabriquer un modèle
+const product = mongoose.model("product", productSchema)
+
+
 
 function getSauces(req,res){
-const header = req.header("Authorization")
-
-  //si le header undefined
-if (header == null) return res.status(403).send({message:"Invalid"})
-
-  //Je coupe la requête du header pour n'avoir que le TOKEN
-const token = header.split(" ")[1]
-
-//Le TOKEN est décodé avec la clé secrète
-const decoded = jwt.verify(token, process.env.JWT_PASSWORD, (err, decoded)=> handleToken(err, decoded, res))
+    console.log("le token a été validé, on est dans  get Sauces")
+   
+    //console.log("le Token est ok", decoded)
+    product.find({}).then(products => res.send(products))
+    //res.send({message:[{sauce:"sauce1", image:"file1"},{sauce:"sauce2", image:"file2"}]})//Array des sauces,j'ai envoyé un objet
 }
 
-function handleToken(err, decoded,res){
-if (err) res.status(403).send({message:"Token invalid" +err})
-else {
-    console.log("le Token est ok", decoded)
-    res.send({message:"voici tous les sauces"})
-}
-}
-module.exports = {getSauces}
+function createSauce(req,res){
+    
+    const product = new product({
+        userId: "p",
+        name : "p",
+        manufacturer : "p",
+        description : "p",
+        mainPepper : "p",
+        imageUrl : "p",
+        heat : 2,
+        likes : 2,
+        dislikes : 2,
+        usersLiked : ["p"],
+        usersDisliked : ["p"]
+        
+    })
+    product.save().then((res)=> console.log("produit enregistré", res)).catch(console.error)
+    }
+
+
+module.exports = {getSauces, createSauce}

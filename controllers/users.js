@@ -41,7 +41,7 @@ async function logUser(req, res){
 //login avec bon mot de passe
 function createToken(email){
 const jwtpassword = process.env.JWT_PASSWORD
-const token =jwt.sign({email:email}, jwtpassword, {expiresIn:"1000ms"})
+const token =jwt.sign({email:email}, jwtpassword, {expiresIn:"24h"})
 console.log('token:',token)
 return token
 }
