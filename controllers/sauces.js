@@ -27,10 +27,15 @@ function deleteSauce(req,res){
  // 1. L'ordre de suppression de produit est envoyé à Mongoo 
     Product.findByIdAndDelete(id)
  // 2. Supprimer l'image localment
-    .then((product) => deleteImage(product))
-    .then((res) => console.log("FILE DELETED",res))
+    .then((product) => { 
+        console.log("PRODUCT", product) 
+        deleteImage(product)
+        return product
+    })
+
+    .then((res) => console.log("file deleted",res))
  // 3. Envoyer un message de succée au client  (site web) 
-    .then((product) => sendClientResponse(product, res))
+ .then(() => res.status(200).json({ message: "La Sauce a été supprimée !" }))
     .catch((err) => res.status(500).send({message: err}))
 }
 
@@ -51,15 +56,16 @@ function deleteSauce(req,res){
     Product.findByIdAndUpdate(id, payload)
     .then((dbRespance) =>  sendClientResponse(dbRespance, res))
         .then ((product) => deleteImage(product))
-        .then((res) => console.log("FILE DELETED",res))
+        .then((res) => console.log("file deleted",res))
     .catch((err) => console.error("Problem Updating",err))//si il y a un probleme de connexion a la base de données
 }
 function deleteImage(product){
-    if (product == null) return
+    if (product == null){ 
     console.log("Delete image", product)
-    const imageToDelete = product.imageUrl.split("/").at(-1)
-  return  fs.unlink("images/" + imageToDelete)
-  
+    const imageToDelete = product.imageUrl.split("/images/").at(-1)
+    console.log("imageToDelete",imageToDelete )
+    fs.unlink("images/" + imageToDelete)
+}
 }
 
 function makePayload(hasNewImage, req){
