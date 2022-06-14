@@ -10,16 +10,16 @@ function getSauces(req,res){
         //Sinon je renvoie une erreur 500
         .catch(error => res.status(500).send(error))
     }
+    function getSauce(req, res){
+        const {id}= req.params
+        return Product.findById(id)
+    }
 //Fonction qui affiche une sauce
 function getSauceById(req,res) {
-    const {id}= req.params
-   //J'utilise la méthode findById de mongoose pour trouver seulement une sauce dans ma base de données 
-    Product.findById(id)
-    //Response envoyée
-        .then(product => {
-            res.send(product)
-})//Sinon je renvoie une erreur
-        .catch(console.error)
+  getSauce(req, res)
+  .then((product) => sendClientResponse(product, res))
+   //Sinon je renvoie une erreur
+  .catch((err) => res.status(500).send(err))
 }
 //Fonction pour supprimer une sauce
 function deleteSauce(req,res){
@@ -85,9 +85,8 @@ function sendClientResponse(product, res) { //un fonction qui va renvoyer la rep
       return  res.status(404).send({message: "Object not found in database"})
     } 
     console.log("ALL GOOD,UPDATING", product)
-   return Promise.resolve(res.status(200).send({message: "Successfully updated"})).then(() => product)
+   return Promise.resolve(res.status(200).send(product)).then(() => product)
 
-    
 }
 
 function makeImageUrl(req, filename ) {
@@ -125,4 +124,56 @@ function createSauce(req,res){
         }).catch(console.error)
     }
 
-module.exports = {getSauces, createSauce, getSauceById, deleteSauce, modifySauce}
+    function likeSauce(req,res){
+        const {like , userId} = req.body
+        if(![0, -1, 1].includes(like)) return res.status(400).send({ message: "Invalid like value"})
+
+
+       getSauce(req,res) 
+       .then((product) => updateVote(product,like , userId, res) ) 
+       .then (pr => pr.save())//save le produit dans les base de données
+       .then(prod => sendClientResponse(prod, res))
+       .catch((err) => res.status(500).send(err))
+
+    }
+function updateVote(product, like, userId, res){
+if (like === 1 || like === -1) return incrementvote(product, userId, like)
+ return resetVote(product, userId, res) //si ce que je devais annuler c'est un like ou un dislike
+}
+function incrementvote(product, userId, like){
+const usersLiked = product.usersLiked
+const usersDisliked = product.usersDisliked
+
+const votersArray = like === 1 ? usersLiked : usersDisliked
+if (votersArray.includes(userId)) return product
+votersArray.push(userId)
+
+if (like === 1) {
+    ++ product.likes   
+}else{
+    ++ product.dislikes 
+}
+return product
+}
+
+
+function resetVote(product, userId, _res){
+    const { usersLiked, usersDisliked } = product
+    //les array qui ont l userid
+    if ([usersLiked, usersDisliked].every((arr) => arr.includes(userId))) return Promise.reject( "User seems to have voted both ways")//pour forcer le catch
+    // les users ne sont pas dans les deux array
+    //Aucun array qui gere les userid
+    if(![usersLiked, usersDisliked].some((arr) => arr.includes(userId))) return Promise.reject("User seems to not have  voted ")
+
+       //supprimer un élément dans un array
+    //pour trouver l array qui inclut les userid et verify le
+    if (usersLiked.includes(userId)){
+        --product.likes 
+        product.usersLiked = product.usersLiked.filter(id => id !== userId)//renvoie un array ou chaque élement aura différent du userid
+    } else {
+        --product.dislikes
+        product.usersDisliked = product.usersDisliked.filter(id => id !== userId)
+    }  
+            return product
+}
+module.exports = {getSauces, createSauce, getSauceById, deleteSauce, modifySauce, likeSauce }
