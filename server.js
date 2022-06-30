@@ -1,4 +1,6 @@
+//Module pour charger mes variables
 require('dotenv').config()
+//Importation du package Express
 const express = require("express")
 const app = express()
 const cors = require("cors")

@@ -1,25 +1,26 @@
 const {User} = require("../mongo")
+// Module de hash Mot De Passe
 const bcrypt = require("bcrypt")
+// Authentification avec un TOKEN utilisateur unique
 const jwt = require("jsonwebtoken")
 
+//Fonction d'inscription
 async function createUser(req, res){
     try{
     const {email, password } = req.body
     const hashedPassword = await hashPassword(password)
-//console.log("password:", password)
-//console.log('hashedPassword:',hashedPassword)
+
     const user = new User({email: email , password: hashedPassword})
     await user.save() 
-    res.status(201).send({message: "Utilisateur enregistré nouveau test! " })
+    res.status(201).send({message: "Utilisateur enregistré " })
     }catch(err){
     res.status(409).send({message:"User pas enregistré :"+ err})
- }
+  }
 }
 function hashPassword(password){
     const saltRounds = 10;
     return bcrypt.hash(password, saltRounds)
 }
-
 async function logUser(req, res){
     try {
     const email = req.body.email
@@ -30,7 +31,6 @@ async function logUser(req, res){
     if(!ispasswordok) {
     res.status(403).send({message: "Mot de passe incorrect"})
     }
-    
     const token = createToken(email)
     res.status(200).send({userId: user._id, token: token})
   } catch(err){

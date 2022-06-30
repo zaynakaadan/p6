@@ -9,10 +9,10 @@ if (header == null) return res.status(403).send({message:"Invalid"})
 const token = header.split(" ")[1]
 
 //Le TOKEN est décodé avec la clé secrète
- jwt.verify(token, process.env.JWT_PASSWORD, (err, decoded)=> {
+jwt.verify(token, process.env.JWT_PASSWORD, (err, decoded)=> {
     if (err) return res.status(403).send({message:"Token invalid" +err})
     console.log("Le token est bien valide , on continue")
-     next()
+    next()
 })
 }
 module.exports = {authenticateUser}

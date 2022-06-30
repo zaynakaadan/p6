@@ -12,8 +12,6 @@ const productSchema = new mongoose.Schema({
     dislikes : Number,
     usersLiked : [String],
     usersDisliked : [String]
-    
 })
-
 
 module.exports = mongoose.model("product", productSchema)

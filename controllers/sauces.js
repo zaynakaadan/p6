@@ -16,10 +16,10 @@ function getSauces(req,res){
     }
 //Fonction qui affiche une sauce
 function getSauceById(req,res) {
-  getSauce(req, res)
-  .then((product) => sendClientResponse(product, res))
+    getSauce(req, res)
+    .then((product) => sendClientResponse(product, res))
    //Sinon je renvoie une erreur
-  .catch((err) => res.status(500).send(err))
+    .catch((err) => res.status(500).send(err))
 }
 //Fonction pour supprimer une sauce
 function deleteSauce(req,res){
@@ -32,39 +32,32 @@ function deleteSauce(req,res){
         deleteImage(product)
         return product
     })
-
     .then((res) => console.log("file deleted",res))
  // 3. Envoyer un message de succée au client  (site web) 
- .then(() => res.status(200).json({ message: "La Sauce a été supprimée !" }))
+    .then(() => res.status(200).json({ message: "La Sauce a été supprimée !" }))
     .catch((err) => res.status(500).send({message: err}))
 }
-
-  
-  function modifySauce(req,res){
+function modifySauce(req,res){
       //Récupere des données de la requete
     const {params} = req //cas pas de image modifié
     const id = req.params.id
-    
-    //console.log("body and params:", body, params)
+        //console.log("body and params:", body, params)
     console.log("req.file", req.file)
-
     //J'ai mis une variable hasNewImage si oui ou non il y a nouvelle image qui a été updatée
     const hasNewImage = req.file != null
     const payload = makePayload(hasNewImage, req)
     
-
     Product.findByIdAndUpdate(id, payload)
     .then((dbRespance) =>  sendClientResponse(dbRespance, res))
         .then ((product) => deleteImage(product))
         .then((res) => console.log("file deleted",res))
-    .catch((err) => console.error("Problem Updating",err))//si il y a un probleme de connexion a la base de données
+        .catch((err) => console.error("Problem Updating",err))//si il y a un probleme de connexion a la base de données
 }
 function deleteImage(product){
     if (product == null){ 
     console.log("Delete image", product)
     const imageToDelete = product.imageUrl.split("/images/").at(-1)
-    console.log("imageToDelete",imageToDelete )
-    fs.unlink("images/" + imageToDelete)
+        fs.unlink("images/" + imageToDelete)
 }
 }
 
@@ -82,26 +75,19 @@ function makePayload(hasNewImage, req){
 function sendClientResponse(product, res) { //un fonction qui va renvoyer la reponse au client
     if (product == null){
         console.log("Nothing To Update")
-      return  res.status(404).send({message: "Object not found in database"})
+    return  res.status(404).send({message: "Object not found in database"})
     } 
     console.log("ALL GOOD,UPDATING", product)
-   return Promise.resolve(res.status(200).send(product)).then(() => product)
-
+return Promise.resolve(res.status(200).send(product)).then(() => product)
 }
-
 function makeImageUrl(req, filename ) {
     return req.protocol + '://' + req.get('host') + "/images/" +  filename
 } 
-
 function createSauce(req,res){
-    //console.log()
     const { body,file } = req
-    //console.log({file})
     const {filename} = file
     const sauce = JSON.parse(body.sauce)
     const {name, manufacturer, description, mainPepper, heat, userId} = sauce
-
-   
     
     const product = new Product({
         userId: userId,
@@ -123,21 +109,19 @@ function createSauce(req,res){
             return console.log("produit enregistré", res)
         }).catch(console.error)
     }
-
     function likeSauce(req,res){
         const {like , userId} = req.body
         if(![0, -1, 1].includes(like)) return res.status(400).send({ message: "Invalid like value"})
 
-
-       getSauce(req,res) 
-       .then((product) => updateVote(product,like , userId, res) ) 
-       .then (pr => pr.save())//save le produit dans les base de données
-       .then(prod => sendClientResponse(prod, res))
-       .catch((err) => res.status(500).send(err))
-
+        getSauce(req,res) 
+        .then((product) => updateVote(product,like , userId, res) ) 
+        .then (pr => pr.save())//save le produit dans les base de données
+        .then(prod => sendClientResponse(prod, res))
+        .catch((err) => res.status(500).send(err))
     }
 function updateVote(product, like, userId, res){
-if (like === 1 || like === -1) return incrementvote(product, userId, like)
+if (like === 1 || like === -1) 
+return incrementvote(product, userId, like)
  return resetVote(product, userId, res) //si ce que je devais annuler c'est un like ou un dislike
 }
 function incrementvote(product, userId, like){
@@ -155,7 +139,6 @@ if (like === 1) {
 }
 return product
 }
-
 
 function resetVote(product, userId, _res){
     const { usersLiked, usersDisliked } = product
