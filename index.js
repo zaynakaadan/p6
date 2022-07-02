@@ -16,11 +16,6 @@ app.use(bodyParser.json())
 app.use("/api/sauces" , saucesRouter)
 app.use("/api/auth" , authRouter)
 
-
-//Routes
-app.get("/", (req, res) =>
-    res.send("Hello World!"))
-
 // Listen   
 app.use("/images",express.static(path.join(__dirname, "images")))
 app.listen(port, () => console.log("listening on port"+ port))
