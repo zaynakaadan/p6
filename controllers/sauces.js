@@ -1,5 +1,6 @@
 const Product = require("../models/Product")
 const fs = require("fs/promises")
+const {authenticateUser} = require("../middleware/auth")
 //Fonction pour affiche toutes les sauces
 function getSauces(_req, res) {
     console.log("le token a été validé, on est dans  get Sauces")
@@ -28,23 +29,24 @@ function getSauceById(req, res) {
 }
 //Fonction pour supprimer une sauce
 function deleteSauce(req, res) {
-    const {
-        id
-    } = req.params
+    const {id} = req.params
+            
     // 1. L'ordre de suppression de produit est envoyé à Mongoo 
     Product.findByIdAndDelete(id)
         // 2. Supprimer l'image localment
         .then((product) => {
             console.log("PRODUCT", product)
+            
             deleteImage(product)
             return product
         })
-        
         // 3. Envoyer un message de succée au client  (site web) 
         .then(() => res.status(200)
             .json({
                 message: "La Sauce a été supprimée !"
+                
             }))
+            
         .catch((err) => res.status(500)
             .send({
                 message: err
@@ -143,7 +145,7 @@ function createSauce(req, res) {
                 .send({
                     message: message
                 })
-            return console.log("produit enregistré", res)
+            return console.log("produit enregistré")
         })
         .catch(console.error)
 }
@@ -217,4 +219,5 @@ module.exports = {
     , deleteSauce
     , modifySauce
     , likeSauce
+    , authenticateUser
 }
