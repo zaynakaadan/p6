@@ -16,14 +16,17 @@ async function createUser(req, res) {
       const hashedPassword = await hashPassword(password)
       
       const user = new User({
+        
           email: email
           , password: hashedPassword
+          
       })
-      await user.save()
-      res.status(201)
+         await user.save()
+            res.status(201)
           .send({
               message: "Utilisateur enregistré "
           })
+         
   } catch (err) {
       res.status(409)
           .send({
@@ -40,9 +43,12 @@ async function logUser(req, res) {
   try {
       const email = req.body.email
       const password = req.body.password
+      console.log("email",email)
       const user = await User.findOne({
           email: email
+         
       })
+      console.log("password",password)
       if (!user) {
           return res.status(403)
               .json({
@@ -79,6 +85,7 @@ function createToken(email) {
       expiresIn: "24h"
   })
   console.log('token:', token)
+  
   return token
 }
 module.exports = {

@@ -35,17 +35,20 @@ function deleteSauce(req, res) {
     Product.findByIdAndDelete(id)
         // 2. Supprimer l'image localment
         .then((product) => {
-            console.log("PRODUCT", product)
-            
-            deleteImage(product)
-            return product
+            if (product.userId === req.body.userId) {
+                deleteImage(product)
+                return product
+            }else {
+                
+                return res.status(403)
+                    .json({
+                        message: "Vous n'avez pas le droit de supprimer cette sauce"
+                    })
+                    }
+                
         })
         // 3. Envoyer un message de succée au client  (site web) 
-        .then(() => res.status(200)
-            .json({
-                message: "La Sauce a été supprimée !"
-                
-            }))
+       // .then(() => res.status(200).json({message: "La Sauce a été supprimée !"}))
             
         .catch((err) => res.status(500)
             .send({
@@ -64,7 +67,19 @@ function modifySauce(req, res) {
     
     Product.findByIdAndUpdate(id, payload)
         .then((dbRespance) => sendClientResponse(dbRespance, res))
-        .then((product) => deleteImage(product))
+        .then((product) => {
+            if (product.userId === req.body.userId) {
+                modifySauce(product)
+                return product
+            }else {
+                
+                return res.status(403)
+                    .json({
+                        message: "Vous n'avez pas le droit de modifié cette sauce"
+                    })
+                    }
+                
+        })
         
         .catch((err) => console.error("Problem Updating", err)) //si il y a un probleme de connexion a la base de données
 }
@@ -221,3 +236,4 @@ module.exports = {
     , likeSauce
     , authenticateUser
 }
+   
