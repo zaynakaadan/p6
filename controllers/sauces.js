@@ -23,6 +23,7 @@ function getSauceById(req, res) {
 		//Sinon je renvoie une erreur
 		.catch((err) => res.status(500).send(err))
 }
+
 //Fonction pour supprimer une sauce
 function deleteSauce(req, res) {
 	const {	id} = req.params		
@@ -60,39 +61,22 @@ async function deleteImage(product) {
 }
 
 //Fonction pour modifier une sauce
-function modifySauce(req, res) {
-	//Récupere des données de la requete
-	const {id }= req.params	
-		
-		//J'ai mis une variable hasNewImage si oui ou non il y a nouvelle image qui a été updatée
-	const hasNewImage = req.file != null
-	const payload = makePayload(hasNewImage, req)
-    //Je mets à jour la sauce dans ma base de données en vérifiant l'ID 
-	Product.findByIdAndUpdate(id, payload)
-    .then((product) => {
-			if(product._Id === req.body.userId) {		
-                //Je mets à jour la sauce dans ma base de données en vérifiant l'ID 
-				product.updateOne({ _id: req.params.id }, { ...hasNewImage, _id: req.params.id })
-                .then((dbRespance) => sendClientResponse(dbRespance, res))          
-                .catch((err) => console.error("Problem Updating", err)) //si il y a un probleme de connexion a la base de données          
-    } else {
-            return res.status(403).json({ message: "Vous n'avez pas le droit de modifié cette sauce"})                  
-        }	
-})
-}
-function makePayload(hasNewImage, req) {
-	//S'il n'y a pas de nouvelle image
-	console.log("hasNewImage:", hasNewImage)   
-	if(!hasNewImage) return req.body  
-    //je convertie les données en format JSON
-	const payload = JSON.parse(req.body.sauce)
-    console.log(payload)
-	//chemin vers les images
-	payload.imageUrl = makeImageUrl(req, req.file.filename)
-	console.log("NOUVELLE IMAGE A GERER il y a un image");
-	console.log("Voici le payload:", payload)
-	return payload
-}
+function modifySauce  (req, res, _next)  {
+	//Je vérifie s'il y a une nouvelle image ou non et s'il y en a une nouvelle je la mets à jour
+	const sauce = req.file ? 
+	//je convertie les données en format JSON 
+	{ ...JSON.parse(req.body.sauce), 
+	  //Ici je gère le format de l'image ==> et si ce n'est le bon je n'accepte pas les données
+	  imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}` } : { ...req.body };
+	//Je mets à jour la sauce dans ma base de données en vérifiant l'ID 
+	Product.updateOne({ _id: req.params.id }, { ...sauce, _id: req.params.id })
+	  //Response 200 envoyée
+	  .then(() => res.status(200).json({ message: "La Sauce a été  modifiée" }))
+	  //Sinon je renvoie une erreur 400
+	  .catch((error) => res.status(400).json({ error }));
+  };
+
+
  //un fonction qui va renvoyer la reponse au client
 function sendClientResponse(product, res) {
 	if(product == null) {
@@ -185,5 +169,5 @@ function resetVote(product, userId, _res) {
 	return product
 }
 module.exports = {
-	getSauces, createSauce, getSauceById, deleteSauce, modifySauce, likeSauce, authenticateUser
+	getSauces, createSauce, getSauceById, deleteSauce, modifySauce ,likeSauce, authenticateUser
 }
