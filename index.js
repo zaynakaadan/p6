@@ -6,13 +6,13 @@ const {authRouter} = require("./routers/auth.router")
 const port = 3000
 //Module qui aide a cacher les adresses MongoDB
 const path = require('path')
-const bodyParser = require("body-parser")
+
 
 // Connection to database
-require("./mongo")
+require("./models/mongo")
 
 //Middleware
-app.use(bodyParser.json())
+
 app.use("/api/sauces" , saucesRouter)
 app.use("/api/auth" , authRouter)
 
