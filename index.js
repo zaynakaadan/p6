@@ -9,7 +9,7 @@ const path = require('path')
 
 
 // Connection to database
-require("./models/mongo")
+require("./models/User")
 
 //Middleware
 

@@ -10,7 +10,7 @@ function authenticateUser(req, res, next) {
     //Je coupe la requête du header pour n'avoir que le TOKEN
     const token = header.split(" ")[1]
     
-    //Le TOKEN est verify avec la clé secrète
+    //Le TOKEN du header est verify avec la clé secrète
     jwt.verify(token, process.env.JWT_PASSWORD, (err) => {
         //Si le token est expiré
         if (err) return res.status(403)

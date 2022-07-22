@@ -1,6 +1,4 @@
-const {
-	User
-} = require("../models/mongo.js")
+const {User} = require("../models/User.js")
 	// Module de hash Mot De Passe
 const bcrypt = require("bcrypt")
 	// Authentification avec un TOKEN utilisateur unique
@@ -26,7 +24,6 @@ async function createUser(req, res) {
 		})
 	}
 }
-
 function hashPassword(password) {
 	const saltRounds = 10;
 	return bcrypt.hash(password, saltRounds)

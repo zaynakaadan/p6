@@ -1,6 +1,6 @@
 //Database
 const mongoose = require('mongoose');
-//package pour s'assurer des messages d'erreur
+// permet de n'avoir d'une donné d'utilisateur par collection
 const uniqueValidator = require("mongoose-unique-validator")
 const password = process.env.DB_PASSWORD
 const username = process.env.DB_USER
@@ -9,12 +9,13 @@ const uri = `mongodb+srv://${username}:${password}@cluster1.mbtuz.mongodb.net/${
 
 mongoose.connect(uri).then((()=> console.log("Connected to Mongo!"))).catch(err => console.error("Error connecting to Mongo:",err))
 const userSchema = new mongoose.Schema({
+// unique = permet de n'avoir qu'un seul mail par collection (peut créer des soucis à voir avec unique-validator)   
     email: {type: String, required: true, unique:true },
     password:{type: String, required: true},
 })
-//appliquer l'unique validator plugin de la userSchema pour les meilleures  messages d'erreur
+// Permet de ne pas avoir plusieurs utilisateur avec la même addresse mail grâce à mongoose unique validator
 userSchema.plugin(uniqueValidator)
 const User = mongoose.model("User" ,userSchema)
-
+// Export du module userChema grâce à la méthode .model de mongoose
 module.exports = {mongoose, User}
 
